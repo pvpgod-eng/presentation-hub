@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Presentation Hub - By Aviral</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .container {
+      padding: 20px;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .developer {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      animation: scrollText 10s linear infinite;
+      white-space: nowrap;
+      overflow: hidden;
+      color: #00ffcc;
+      margin: 10px 0;
+    }
+    @keyframes scrollText {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    #password-section, #topic-section, #language-section, #presentation {
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #00ffcc;
+      color: black;
+    }
+    .curtain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 10;
+      animation: curtainOpen 2s forwards;
+    }
+    @keyframes curtainOpen {
+      0% { height: 100%; }
+      100% { height: 0%; }
+    }
+    .settings-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #222;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 20px;
+      z-index: 99;
+    }
+    .settings-panel {
+      position: fixed;
+      bottom: 70px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 15px;
+      display: none;
+      z-index: 99;
+      border-radius: 10px;
+    }
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .footer a {
+      color: #0ff;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    #clock, #location {
+      margin: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bubbles"></canvas>
+  <div class="curtain" id="curtain"></div>
+  <div class="container">
+    <h1 id="main-title">Welcome to the Presentation Hub</h1>
+    <div class="developer">Made with ❤️ by Developer Aviral</div>
+    <div id="clock"></div>
+    <div id="location"></div>
+    <div id="password-section">
+      <input type="password" id="password-input" placeholder="Enter Password" />
+      <button onclick="checkPassword()">Unlock</button>
+    </div>
+    <div id="topic-section" style="display:none;">
+      <h2>Select a Topic</h2>
+      <button onclick="selectTopic('AiProject')">AiProject</button>
+      <button onclick="selectTopic('History')">History</button>
+      <button onclick="selectTopic('Geography')">Geography</button>
+    </div>
+    <div id="language-section" style="display:none;">
+      <h2>Select Language</h2>
+      <button onclick="showPresentation('English')">English</button>
+      <button onclick="showPresentation('Hindi')">Hindi</button>
+      <button onclick="showPresentation('French')">French</button>
+    </div>
+    <div id="presentation"></div>
+    <div class="footer">
+      <a href="terms.html">Terms and Services</a> |
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="feedback.html">Give Feedback</a> |
+      <a href="contact.html">Contact Us</a> |
+      <a href="blog.html">Blog</a>
+      <br><br>
+      © 2025 All rights reserved | Developer: Aviral
+    </div>
+  </div>
+  <button class="settings-icon" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+  <div class="settings-panel" id="settings-panel">
+    <label>Background Color: <input type="color" onchange="changeBG(this.value)"></label><br/><br/>
+    <label>Text Color: <input type="color" onchange="changeText(this.value)"></label><br/><br/>
+    <label>Button Color: <input type="color" onchange="changeButton(this.value)"></label><br/><br/>
+    <div id="google_translate_element"></div>
+  </div>
+  <script>
+    let selectedTopic = "";
+    const presentationLinks = {
+      "AiProject_English": "https://drive.google.com/file/d/1wd4QRZsVAK0VlZroHN-_Kx8ZCAkRRx6X/view?usp=sharing",
+      "Science_Hindi": "presentations/science_hi.pdf",
+      "Science_French": "presentations/science_fr.pdf",
+      "History_English": "presentations/history_en.pdf",
+      "History_Hindi": "presentations/history_hi.pdf",
+      "History_French": "presentations/history_fr.pdf",
+      "Geography_English": "presentations/geography_en.pdf",
+      "Geography_Hindi": "presentations/geography_hi.pdf",
+      "Geography_French": "presentations/geography_fr.pdf"
+    };
+
+    function checkPassword() {
+      const pass = document.getElementById("password-input").value;
+      if (pass === "1234") {
+        document.getElementById("curtain").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("password-section").style.display = "none";
+          document.getElementById("topic-section").style.display = "block";
+        }, 2000);
+      } else {
+        alert("Wrong password!");
+      }
+    }
+    function selectTopic(topic) {
+      selectedTopic = topic;
+      document.getElementById("topic-section").style.display = "none";
+      document.getElementById("language-section").style.display = "block";
+    }
+    function showPresentation(lang) {
+      const key = `${selectedTopic}_${lang}`;
+      const url = presentationLinks[key];
+      if (url) {
+        document.getElementById("presentation").innerHTML = `<iframe src="${url}"></iframe>`;
+      } else {
+        document.getElementById("presentation").innerHTML = `<p style="color:red;">Presentation not found.</p>`;
+      }
+    }
+    function toggleSettings() {
+      const panel = document.getElementById("settings-panel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+    function changeBG(color) {
+      document.body.style.background = color;
+      bubbleColor = color;
+    }
+    function changeText(color) {
+      document.body.style.color = color;
+    }
+    function changeButton(color) {
+      document.querySelectorAll("button").forEach(btn => {
+        btn.style.background = color;
+      });
+    }
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("clock").textContent = "Time: " + now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+    async function fetchLocation() {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        document.getElementById("location").textContent =
+          `Location: ${data.city}, ${data.country_name}`;
+      } catch {
+        document.getElementById("location").textContent = "Location: Unknown";
+      }
+    }
+    fetchLocation();
+    const canvas = document.getElementById("bubbles");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let bubbleColor = "#00ffff";
+    const bubbles = [];
+    class Bubble {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.radius = Math.random() * 8 + 2;
+        this.speed = Math.random() * 1 + 0.5;
+      }
+      update() {
+        this.y -= this.speed;
+        if (this.y < -this.radius) {
+          this.y = canvas.height + this.radius;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = bubbleColor;
+        ctx.fill();
+      }
+    }
+    for (let i = 0; i < 120; i++) {
+      bubbles.push(new Bubble());
+    }
+    function animateBubbles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bubbles.forEach(b => {
+        b.update();
+        b.draw();
+      });
+      requestAnimationFrame(animateBubbles);
+    }
+    animateBubbles();
+  </script>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en'
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
