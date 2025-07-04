@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Presentation Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    p {
+      font-size: 1.1rem;
+    }
+
+    .email {
+      margin: 20px 0;
+      font-size: 1.2rem;
+      color: #00ffcc;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #00ffcc;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .translate {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contact Us</h1>
+  <p>If you have any queries, suggestions, or need help, feel free to reach out to us.</p>
+  <div class="email">Email: <a href="mailto:pvpgod301@gmail.com">pvpgod301@gmail.com</a></div>
+
+  <div id="google_translate_element" class="translate"></div>
+
+  <footer>
+    <a href="index.html">Home</a>
+    <a href="terms.html">Terms & Services</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="blog.html">Blog</a>
+  </footer>
+
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'af,ar,bn,zh,cs,da,nl,en,fi,fr,de,el,gu,hi,hu,id,it,ja,kn,ko,ml,mr,ne,no,pa,pl,pt,ro,ru,sa,es,sv,ta,te,th,tr,uk,ur,vi',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
